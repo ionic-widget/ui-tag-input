@@ -1,0 +1,33 @@
+div.item.secondary-search-bar.category-search-bar{
+    padding: 6px 0 5px 0px;
+    overflow-x: scroll;
+}
+div.category-search-bar > tag-list div.tag-container{
+    display: inline-block;
+}
+div.category-search-bar > growing-input,
+div.category-search-bar > growing-input input{
+    display: inline-block;
+}
+div.growingInput > span.hiddenText{
+    position: absolute;
+    left: 0;
+    height: 0;
+    overflow: hidden;
+}
+div.tag-container pill{
+    cursor: pointer;
+}
+div.tag-container pill>i{
+    font-size: x-small;
+}
+div.category-search-bar div.tag-container{
+    margin-left: 44px;
+}
+div.category-search-bar > img {
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    left: 8px;
+    top: 8px;
+}

@@ -1,0 +1,23 @@
+{
+  "name": "tag-input",
+  "authors": [
+    "Tan Li Hau <lhtan93@gmail.com>"
+  ],
+  "description": "tag input for Ionic",
+  "main": "tagManager.js",
+  "moduleType": [],
+  "keywords": [
+    "tag-input",
+    "input",
+    "ionic"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
