@@ -24,10 +24,27 @@ div.tag-container pill>i{
 div.category-search-bar div.tag-container{
     margin-left: 44px;
 }
-div.category-search-bar > img {
+div.category-search-bar > .icon {
     width: 28px;
     height: 28px;
     position: absolute;
     left: 8px;
     top: 8px;
+    text-align: center;
+}
+div.category-search-bar > .icon:before {
+    transform: translateY(50%);
+}
+pill{
+    margin-right: 4px;
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #fff;
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25);
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25)
+}
+pill.category-pill{
+    background-color: $positive;
+    white-space: nowrap;
 }

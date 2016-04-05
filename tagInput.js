@@ -7,9 +7,10 @@ angular.module('ui.taginput', [])
             tags: '=',
             inputModel: '=',
             placeholder: '@',
+            icon: '@',
         },
         template: '<div class="item secondary-search-bar category-search-bar">' +
-            '<img src="img/icon/icon_tag.png" />' +
+            '<span class="icon ion {{icon}}"></span>' +
             '<tag-list tags="tags"></tag-list>' +
             '<growing-input placeholder="{{placeholder}}" input-model="inputModel"></growing-input' +
         '</div>',

@@ -4,7 +4,7 @@
     "Tan Li Hau <lhtan93@gmail.com>"
   ],
   "description": "tag input for Ionic",
-  "main": "tagManager.js",
+  "main": ["tagInput.js", "tagInput.scss"],
   "moduleType": [],
   "keywords": [
     "tag-input",
@@ -19,5 +19,8 @@
     "bower_components",
     "test",
     "tests"
-  ]
+    ],
+    "dependencies": {
+        "jquery": "2.2.x"
+    }
 }
