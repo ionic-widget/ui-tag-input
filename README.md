@@ -12,17 +12,22 @@
 
 ## Usage
 
-1. Add tagInput.js into `index.html`
+1. Add jQuery.js and tagInput.js into `index.html`
 
     ```javascript
-    <script src="lib/tag-input/tagInput.js"></script>
+    <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    ...
+    <script src="lib/ui-tag-input/tagInput.js"></script>
     ```
 2. Import tagInput.sccs into `scss/ionic.app.scss`
 
     ```sass
     @import "www/lib/ionic/scss/ionic";
-    @import "www/lib/tag-input/tagManager";
+    @import "www/lib/ui-tag-input/tagInput";
     ```
+
+    and run `grunt` to compile `sass`
 
 3. Add into your controller
     `angular.module('app.controllers', ['ui.taginput'])`
