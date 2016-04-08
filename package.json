@@ -1,0 +1,26 @@
+{
+  "name": "ui-tag-input",
+  "version": "1.0.0",
+  "description": "Tag Input for Ionic",
+  "main": "tagInput.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ionic-widget/ui-tag-input.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ionic-widget/ui-tag-input/issues"
+  },
+  "homepage": "https://github.com/ionic-widget/ui-tag-input#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-angular-filesort": "^1.1.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-ng-annotate": "^2.0.0",
+    "gulp-uglify": "^1.5.3"
+  }
+}

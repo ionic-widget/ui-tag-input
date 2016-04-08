@@ -4,7 +4,7 @@
     "Tan Li Hau <lhtan93@gmail.com>"
   ],
   "description": "tag input for Ionic",
-  "main": ["tagInput.js", "tagInput.scss"],
+  "main": ["tagInput.min.js", "tagInput.scss"],
   "moduleType": [],
   "keywords": [
     "tag-input",
