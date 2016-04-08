@@ -27,7 +27,9 @@ angular.module('ui.taginput', [])
             angular.element(inputElement).bind("keydown keypress", function(event) {
                 if($scope.inputModel.value === ""){
                     if(event.keyCode === 8 || event.keyCode === 46) {
-                        $scope.tags.pop();
+                        $timeout(function(){
+                            $scope.tags.pop();
+                        });
                         event.preventDefault();
                     }
                 }
