@@ -8,11 +8,11 @@
 
 ## Screenshot
 
-![screenshot](https://github.com/ionic-widget/tag-input/blob/master/screenshot/screenshot.png?raw=true "Screenshot")
+![screenshot](https://github.com/ionic-widget/tag-input/blob/development/screenshot/screenshot.gif?raw=true "Screenshot")
 
 ## Usage
 
-1. Add jQuery.js and tagInput.js into `index.html`
+1. Add `jQuery.js` and `tagInput.js` into `index.html`
 
     ```javascript
     <script src="lib/jquery/dist/jquery.min.js"></script>
