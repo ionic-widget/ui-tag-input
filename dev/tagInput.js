@@ -9,7 +9,7 @@ angular.module('ui.taginput')
         template: '<div class="item secondary-search-bar category-search-bar">' +
             '<span class="icon ion {{::tagInput.config(\'icon\')}} "></span>' +
             '<tag-list ui-tag-input-id="{{::uiTagInputId}}"></tag-list>' +
-            '<growing-input ui-tag-input-id="{{::uiTagInputId}}" input-model="inputModel"></growing-input>' +
+            '<growing-input ui-tag-input-id="{{::uiTagInputId}}"></growing-input>' +
         '</div>',
         compile: function(element, attrs){
             tagInputConfig.createTagInput(attrs.uiTagInputId, attrs);
@@ -17,7 +17,7 @@ angular.module('ui.taginput')
         }
     };
     function linkFn($scope, $element){
-        $scope.tagInput = tagInputConfig.getTagInput($scope.uiTagInputId);
+        var tagInput = tagInputConfig.getTagInput($scope.uiTagInputId);
         var inputElement = $element.find("input")[0];
 
         $element.bind("click", function(event){
@@ -25,16 +25,6 @@ angular.module('ui.taginput')
                 $timeout(function(){
                     inputElement.focus();
                 });
-            }
-        });
-        angular.element(inputElement).bind("keydown keypress", function(event) {
-            if($scope.tagInput.text() === ""){
-                if(event.keyCode === 8 || event.keyCode === 46) {
-                    $timeout(function(){
-                        $scope.tagInput.popTag();
-                    });
-                    event.preventDefault();
-                }
             }
         });
         $scope.$watch("tags.length", function(){
@@ -47,48 +37,104 @@ angular.module('ui.taginput')
 .directive('tagList', function(tagInputConfig) {
     return {
         restrict: 'E',
-        scope: {
-            uiTagInputId: '@',
-        },
         template: '<div class="tag-container">' +
                       '<pill ng-repeat="(idx, tag) in tags" ng-click="removeTag(idx)" class="category-pill">{{ getDisplay(tag) }} <i class="ion-close-round"></i></pill>' +
                   '</div>',
-        link: function($scope){
+        link: function($scope, $elem, $attr){
+            var tagInputId = $attr.uiTagInputId;
+            var tagInput = tagInputConfig.getTagInput(tagInputId);
+            $scope.tags = tagInput.getTags();
+
             $scope.getDisplay = function(val){
-                return val[tagInputConfig.getTagInput($scope.uiTagInputId).config('displayProperty')];
+                return val[tagInput.config('displayProperty')];
             };
             $scope.removeTag = function(idx){
-                if(idx >= 0){
-                    $scope.tags.splice(idx, 1);
-                }
+                tagInput.popTag(idx);
             };
-            $scope.tags = tagInputConfig.getTagInput($scope.uiTagInputId).getTags();
         }
     };
 })
-.directive('growingInput', function(tagInputConfig) {
+.directive('growingInput', function(tagInputConfig, $timeout) {
     return {
         restrict: 'E',
-        scope: {
-            uiTagInputId: '@',
-            inputModel: '=',
-        },
         template:
             '<div class="growingInput">' +
                 '<input type="text" placeholder="{{placeholder}}" ng-model="text.value">' +
-                '<span class="hiddenText">{{inputModel.value || placeholder}}</span>' +
+                '<span class="hiddenText">{{text.value || placeholder}}</span>' +
             '</div>',
-        link: function ($scope, $element){
+        link: function ($scope, $element, $attr){
+            var tagInputId = $attr.uiTagInputId;
             var inputElement = $element.find("input");
             var spanElement = $element.find("span");
-            var tagInput = tagInputConfig.getTagInput($scope.uiTagInputId);
-            $scope.$watch("inputModel.value", function(){
+            var tagInput = tagInputConfig.getTagInput(tagInputId);
+            $scope.placeholder = tagInput.config("placeholder");
+            $scope.text = tagInput._text;
+
+            $scope.$watch("text.value", function(){
                 var width = spanElement.width() + 20;
                 inputElement.css('width', width + 'px');
             });
-
-            $scope.placeholder = tagInput.config("placeholder");
-            $scope.text = tagInput._text;
+            inputElement.on('blur', function(){
+                //TODO blur will trigger event when click to delete tag
+                $timeout(tagInput.pushTag);
+            });
+            angular.element(inputElement).bind("keydown keypress", function(event) {
+                switch(event.which){
+                    case 8:  //backspace
+                    case 46: //delete
+                        if(getCaret(inputElement[0]) === 0){
+                            $timeout(function(){
+                                var tagRemoved = tagInput.popTag();
+                                if(tagRemoved !== null && tagInput.config('enableEditingLastTag')){
+                                    var tagText = tagRemoved[tagInput.config('displayProperty')];
+                                    tagInput.text( tagText + tagInput.text());
+                                    $timeout(function() {
+                                        setCaret(inputElement[0], tagText.length);
+                                    });
+                                }
+                            });
+                            event.preventDefault();
+                        }
+                        break;
+                    case 13: //enter
+                        if(tagInput.config('addOnEnter')){
+                            pushTagAtCaret();
+                            event.preventDefault();
+                        }
+                        break;
+                    case 32: //space
+                        if(tagInput.config('addOnSpace')){
+                            pushTagAtCaret();
+                            event.preventDefault();
+                        }
+                        break;
+                    case 188: //comma
+                        if(tagInput.config('addOnComma')){
+                            pushTagAtCaret();
+                            event.preventDefault();
+                        }
+                        break;
+                }
+            });
+            function pushTagAtCaret(){
+                var caret = getCaret(inputElement[0]);
+                var text = tagInput.text();
+                var subtext = text.substring(0, caret);
+                $timeout(function(){
+                    if(tagInput.pushTag(subtext)){
+                        tagInput.text(text.substring(caret));
+                        $timeout(function(){
+                            setCaret(inputElement[0], 0);
+                        });
+                    }
+                });
+            }
+            function getCaret(e){
+                return (e.selectionStart === e.selectionEnd) ? e.selectionStart : -1;
+            }
+            function setCaret(e, pos){
+                e.setSelectionRange(pos, pos);
+            }
         }
-    }
+    };
 });
