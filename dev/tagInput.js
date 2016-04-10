@@ -34,24 +34,39 @@ angular.module('ui.taginput')
         });
     }
 })
-.directive('tagList', function(tagInputConfig) {
+.directive('tagList', function(tagInputConfig, $interpolate) {
     return {
         restrict: 'E',
         template: '<div class="tag-container">' +
-                      '<pill ng-repeat="(idx, tag) in tags" ng-click="removeTag(idx)" class="category-pill">{{ getDisplay(tag) }} <i class="ion-close-round"></i></pill>' +
                   '</div>',
-        link: function($scope, $elem, $attr){
-            var tagInputId = $attr.uiTagInputId;
-            var tagInput = tagInputConfig.getTagInput(tagInputId);
-            $scope.tags = tagInput.getTags();
+        link: {
+            pre: function($scope, $elem, $attr){
+                var tagInputId = $attr.uiTagInputId;
+                var tagInput = tagInputConfig.getTagInput(tagInputId);
+                var tagContainer = $elem.find('.tag-container');
+                var tags = {};
 
-            $scope.getDisplay = function(val){
-                return val[tagInput.config('displayProperty')];
-            };
-            $scope.removeTag = function(idx){
-                tagInput.popTag(idx);
-            };
-        }
+                tagInput.on('onTagAdded', function addTag(tag){
+                    var interpolated = $interpolate('<pill class="category-pill">{{name}} <i class="ion-close-round"></i></pill>')({name: getDisplay(tag)});
+                    var pill = angular.element(interpolated);
+                    tags[JSON.stringify(tag)] = pill;
+                    tagContainer.append(pill);
+                    pill.on('click', removeTag.bind(tag));
+                });
+                tagInput.on('onTagRemoved', function removeTag(tag){
+                    var tagElem = tags[JSON.stringify(tag)];
+                    tagElem.off('click');
+                    tagElem.remove();
+                    delete tagElem;
+                });
+                function removeTag(event){
+                    tagInput.popTag(this);
+                };
+                function getDisplay(val){
+                    return val[tagInput.config('displayProperty')];
+                };
+            }
+        },
     };
 })
 .directive('growingInput', function(tagInputConfig, $timeout) {

@@ -97,27 +97,30 @@ angular.module('ui.taginput', [])
                     return false;
                 }
                 this._tags.push(tag);
-                this.trigger("onTagAdded", tag);
+                setTimeout(function(){this.trigger("onTagAdded", tag);}.bind(this));
             }else{
                 return false;
             }
             return true;
         },
         popTag: function(idx){
-            if(angular.isDefined(idx)){
+            if(!angular.isDefined(idx)){
+                var tagRemoved = this._tags.pop();
+                if(tagRemoved !== undefined){
+                    setTimeout(function(){this.trigger("onTagRemoved", tagRemoved);}.bind(this));
+                    return tagRemoved;
+                }
+            }else if(angular.isNumber(idx)){
                 if(idx >= 0){
                     var tagRemoved = this._tags.splice(idx, 1);
                     if(tagRemoved.length === 1){
-                        this.trigger("onTagRemoved", tagRemoved[0]);
+                        setTimeout(function(){this.trigger("onTagRemoved", tagRemoved[0])}.bind(this));
                         return tagRemoved[0];
                     }
                 }
-            }else{
-                var tagRemoved = this._tags.pop();
-                if(tagRemoved !== undefined){
-                    this.trigger("onTagRemoved", tagRemoved);
-                    return tagRemoved;
-                }
+            }else if(angular.isObject(idx)){
+                var index = this._tags.indexOf(idx);
+                return this.popTag(index);
             }
             return null;
         },
