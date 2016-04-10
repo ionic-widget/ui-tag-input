@@ -18,7 +18,7 @@
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     ...
-    <script src="lib/ui-tag-input/tagInput.js"></script>
+    <script src="lib/ui-tag-input/tagInput.min.js"></script>
     ```
 2. Import tagInput.sccs into `scss/ionic.app.scss`
 
@@ -32,11 +32,6 @@
 3. Add into your controller
     `angular.module('app.controllers', ['ui.taginput'])`
 
-4. Add into your view
+## Wiki
 
-    `<tag-input tags="tags" icon="ion-pricetag" placeholder="Placeholder" input-model="text"></tag-input>`
-
-    * `tags` - array of objects, eg: `[{key: '1', value: 'Hello'}, {key: '2', value: 'World'}]`
-    * `icon` - ionicon class
-    * `placeholder` - placeholder for the input
-    * `input-model` - eg. `{value: 'text'}`
+See [wiki](https://github.com/ionic-widget/ui-tag-input/wiki) for configuration options
