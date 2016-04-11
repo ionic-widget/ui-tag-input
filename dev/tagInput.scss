@@ -1,12 +1,12 @@
-div.item.secondary-search-bar.category-search-bar{
+div.item.ui-tag-input{
     padding: 6px 0 5px 0px;
     overflow-x: scroll;
 }
-div.category-search-bar > tag-list div.tag-container{
+div.ui-tag-input > tag-list div.tag-container{
     display: inline-block;
 }
-div.category-search-bar > growing-input,
-div.category-search-bar > growing-input input{
+div.ui-tag-input > growing-input,
+div.ui-tag-input > growing-input input{
     display: inline-block;
 }
 div.growingInput > span.hiddenText{
@@ -21,10 +21,13 @@ div.tag-container pill{
 div.tag-container pill>i{
     font-size: x-small;
 }
-div.category-search-bar div.tag-container{
+div.ui-tag-input.withIcon div.tag-container{
     margin-left: 44px;
 }
-div.category-search-bar > .icon {
+div.ui-tag-input div.tag-container{
+    margin-left: 8px;
+}
+div.ui-tag-input > .icon {
     width: 28px;
     height: 28px;
     position: absolute;
@@ -32,7 +35,7 @@ div.category-search-bar > .icon {
     top: 8px;
     text-align: center;
 }
-div.category-search-bar > .icon:before {
+div.ui-tag-input > .icon:before {
     transform: translateY(50%);
 }
 pill{
