@@ -6,7 +6,7 @@ angular.module('ui.taginput', [])
         'minTags': {type: Number, default: 0},
         'maxTags': {type: Number, default: Number.MAX_SAFE_INTEGER},
         'placeholder': {type: String, default: ''},
-        'icon': {type: String, default: undefined },
+        'icon': {type: String, default: '' },
         'addOnEnter': {type: Boolean, default: true },
         'addOnSpace': {type: Boolean, default: false },
         'addOnComma': {type: Boolean, default: true },
@@ -149,11 +149,14 @@ angular.module('ui.taginput', [])
     };
     this.createTagInput = function(name, config){
         if (_tagInputs[name]) {
-            console.error("ui-tag-input with identifier '" + name + "' exists before. The config will be replaced");
+            console.error("ui-tag-input with identifier '" + name + "' exists before.");
+            _tagInputs[name].extendConfig(config);
+        }else{
+            _tagInputs[name] = new TagInput(config);
         }
-        _tagInputs[name] = new TagInput(config);
+        return _tagInputs[name];
     };
     this.getTagInput = function(name){
-        return _tagInputs[name];
+        return (_tagInputs[name]) ? _tagInputs[name]: this.createTagInput(name, {});
     }
 });

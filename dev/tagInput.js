@@ -1,13 +1,12 @@
 angular.module('ui.taginput')
-.directive('tagInput', function($timeout, tagInputConfig){
+.directive('tagInput', function($timeout, $interpolate, tagInputConfig){
     return {
         restrict: 'E',
         replace: true,
         scope: {
             uiTagInputId: '@',
         },
-        template: '<div class="item secondary-search-bar category-search-bar">' +
-            '<span class="icon ion {{::tagInput.config(\'icon\')}} "></span>' +
+        template: '<div class="item ui-tag-input">' +
             '<tag-list ui-tag-input-id="{{::uiTagInputId}}"></tag-list>' +
             '<growing-input ui-tag-input-id="{{::uiTagInputId}}"></growing-input>' +
         '</div>',
@@ -19,6 +18,12 @@ angular.module('ui.taginput')
     function linkFn($scope, $element){
         var tagInput = tagInputConfig.getTagInput($scope.uiTagInputId);
         var inputElement = $element.find("input")[0];
+
+        if(tagInput.config('icon') !== ''){
+            var interpolatedIcon = $interpolate('<span class="icon ion {{icon}} "></span>')({ icon: tagInput.config('icon') });
+            $element.prepend(angular.element(interpolatedIcon));
+            $element.addClass('withIcon');
+        }
 
         $element.bind("click", function(event){
             if(event.target == $element[0]){
