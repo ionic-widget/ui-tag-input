@@ -1,6 +1,13 @@
+$tag_color: #387ef5 !default;
+$tag_text_color: #fff !default;
+$tag_input_background_color: #fff !default;
+$tag_input_text_color: #000 !default;
+$tag_input_icon_color: $tag_input_text_color !default;
+
 div.item.ui-tag-input{
     padding: 6px 0 5px 0px;
     overflow-x: scroll;
+    background-color: $tag_input_background_color;
 }
 div.ui-tag-input > tag-list div.tag-container{
     display: inline-block;
@@ -8,6 +15,8 @@ div.ui-tag-input > tag-list div.tag-container{
 div.ui-tag-input > growing-input,
 div.ui-tag-input > growing-input input{
     display: inline-block;
+    background-color: rgba(0, 0, 0, 0);
+    color: $tag_input_text_color;
 }
 div.growingInput > span.hiddenText{
     position: absolute;
@@ -34,6 +43,7 @@ div.ui-tag-input > .icon {
     left: 8px;
     top: 8px;
     text-align: center;
+    color: $tag_input_icon_color !important;
 }
 div.ui-tag-input > .icon:before {
     transform: translateY(50%);
@@ -42,12 +52,12 @@ pill{
     margin-right: 4px;
     padding: 2px 4px;
     font-size: 90%;
-    color: #fff;
+    color: $tag_text_color;
     border-radius: 3px;
     -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25);
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25)
 }
-pill.category-pill{
-    background-color: $positive;
+pill.ui-tag-input-pill{
+    background-color: $tag_color;
     white-space: nowrap;
 }
