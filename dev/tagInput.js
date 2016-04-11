@@ -52,7 +52,7 @@ angular.module('ui.taginput')
                 var tags = {};
 
                 tagInput.on('onTagAdded', function addTag(tag){
-                    var interpolated = $interpolate('<pill class="category-pill">{{name}} <i class="ion-close-round"></i></pill>')({name: getDisplay(tag)});
+                    var interpolated = $interpolate('<pill class="ui-tag-input-pill">{{name}} <i class="ion-close-round"></i></pill>')({name: getDisplay(tag)});
                     var pill = angular.element(interpolated);
                     tags[JSON.stringify(tag)] = pill;
                     tagContainer.append(pill);
