@@ -1,5 +1,5 @@
 angular.module('ui.taginput')
-.directive('tagInput', function($timeout, $interpolate, tagInputConfig){
+.directive('tagInput', function($timeout, $interpolate, TagInputConfig){
     return {
         restrict: 'E',
         replace: true,
@@ -11,12 +11,12 @@ angular.module('ui.taginput')
             '<growing-input ui-tag-input-id="{{::uiTagInputId}}"></growing-input>' +
         '</div>',
         compile: function(element, attrs){
-            tagInputConfig.createTagInput(attrs.uiTagInputId, attrs);
+            TagInputConfig.createTagInput(attrs.uiTagInputId, attrs);
             return linkFn;
         }
     };
     function linkFn($scope, $element){
-        var tagInput = tagInputConfig.getTagInput($scope.uiTagInputId);
+        var tagInput = TagInputConfig.getTagInput($scope.uiTagInputId);
         var inputElement = $element.find("input")[0];
 
         if(tagInput.config('icon') !== ''){
@@ -39,7 +39,7 @@ angular.module('ui.taginput')
         });
     }
 })
-.directive('tagList', function(tagInputConfig, $interpolate) {
+.directive('tagList', function(TagInputConfig, $interpolate) {
     return {
         restrict: 'E',
         template: '<div class="tag-container">' +
@@ -47,7 +47,7 @@ angular.module('ui.taginput')
         link: {
             pre: function($scope, $elem, $attr){
                 var tagInputId = $attr.uiTagInputId;
-                var tagInput = tagInputConfig.getTagInput(tagInputId);
+                var tagInput = TagInputConfig.getTagInput(tagInputId);
                 var tagContainer = $elem.find('.tag-container');
                 var tags = {};
 
@@ -74,7 +74,7 @@ angular.module('ui.taginput')
         },
     };
 })
-.directive('growingInput', function(tagInputConfig, $timeout) {
+.directive('growingInput', function(TagInputConfig, $timeout) {
     return {
         restrict: 'E',
         template:
@@ -86,7 +86,7 @@ angular.module('ui.taginput')
             var tagInputId = $attr.uiTagInputId;
             var inputElement = $element.find("input");
             var spanElement = $element.find("span");
-            var tagInput = tagInputConfig.getTagInput(tagInputId);
+            var tagInput = TagInputConfig.getTagInput(tagInputId);
             $scope.placeholder = tagInput.config("placeholder");
             $scope.text = tagInput._text;
 
