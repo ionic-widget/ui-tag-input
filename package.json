@@ -23,5 +23,8 @@
     "gulp-ng-annotate": "^2.0.0",
     "gulp-ngdocs": "^0.2.13",
     "gulp-uglify": "^1.5.3"
+  },
+  "dependencies": {
+    "jquery": "^2.2.3"
   }
 }
