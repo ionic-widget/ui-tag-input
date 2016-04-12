@@ -1,10 +1,14 @@
 angular.module('ui.taginput', [])
-.provider('tagInputConfig', function(){
+.provider('TagInputConfig', function(){
     // var Model = require("./fishbone");
     var defaultConfig = {
         'displayProperty': {type: String, default: 'value'},
+        'keyProperty': {type: String, default: 'value'},
+        'minLength': {type: Number, default: 0},
+        'maxLength': {type: Number, default: Number.MAX_SAFE_INTEGER},
         'minTags': {type: Number, default: 0},
         'maxTags': {type: Number, default: Number.MAX_SAFE_INTEGER},
+        'allowMoreThanMaxTags': {type: Boolean, default: true },
         'placeholder': {type: String, default: ''},
         'icon': {type: String, default: '' },
         'addOnEnter': {type: Boolean, default: true },
@@ -21,19 +25,19 @@ angular.module('ui.taginput', [])
     var Config = Model({
         init: function(config){
             for(var c in defaultConfig){
-                this[c] = clean(defaultConfig[c].type, config[c]) || defaultConfig[c].default;
+                this[c] = clean(defaultConfig[c].type, config[c], defaultConfig[c].default);
             }
             this.allowedTagsPatternRegex = new RegExp(this.allowedTagsPattern);
         },
         extend: function(config){
             for(var c in defaultConfig){
-                this[c] = clean(defaultConfig[c].type, config[c]) || this[c];
+                this[c] = clean(defaultConfig[c].type, config[c], this[c]);
             }
             this.allowedTagsPatternRegex = new RegExp(this.allowedTagsPattern);
         },
         set: function(name, value){
             if(name in this){
-                this[name] = clean(defaultConfig[name].type, value) || this[name];
+                this[name] = clean(defaultConfig[name].type, value, this[name]);
                 //for special needs
                 if(name === 'allowedTagsPattern'){
                     this.allowedTagsPatternRegex = new RegExp(this.allowedTagsPattern);
@@ -45,13 +49,14 @@ angular.module('ui.taginput', [])
         private Config methods
     */
     var cleanFn = {};
-    cleanFn[String] = function(value){ return angular.isString(value) ? value : null; };
-    cleanFn[Number] = function(value){ return (/^\d+$/.test(value)) ? parseInt(value) : null; };
-    cleanFn[Array] = function(value){ return (angular.isArray(value)) ? value : null; };
-    cleanFn[Boolean] = function(value){ return (value === true || value === false) ? value : (angular.isString(value) && value === 'true'); };
-    function clean(type, value){
+    cleanFn[String] = function(value){ return angular.isString(value) ? value : undefined; };
+    cleanFn[Number] = function(value){ return (/^\d+$/.test(value)) ? parseInt(value) : undefined; };
+    cleanFn[Array] = function(value){ return (angular.isArray(value)) ? value : undefined; };
+    cleanFn[Boolean] = function(value){ if(value === true || value === false){ return value; } else if (angular.isString(value)){ if(value === 'true') return true; if(value === 'false') return false; } return undefined;};
+    function clean(type, value, def){
         if(cleanFn[type]){
-            return cleanFn[type](value);
+            var cleaned = cleanFn[type](value);
+            return (cleaned == undefined) ? def : cleaned;
         }else{
             return null;
         }
@@ -75,7 +80,10 @@ angular.module('ui.taginput', [])
                     return this.pushTag(this.text()) && !!this.text('');
                 }
             } else if (angular.isString(tag)){
-                if(tag !== '' && this.config('allowedTagsPatternRegex').test(tag)){
+                if(tag !== '' &&
+                   this.config('allowedTagsPatternRegex').test(tag) &&
+                   tag.length >= this.config('minLength') &&
+                   tag.length <= this.config('maxLength')){
                     var newTag = {};
                     newTag[this.config('displayProperty')] = tag;
                     if(this.pushTag(newTag)){
@@ -93,10 +101,17 @@ angular.module('ui.taginput', [])
                     }
                 }
             }else if(angular.isObject(tag)){
-                if(this._tags.length >= this._config.maxTags){
+                //check if allow more tags
+                if(!this.config('allowMoreThanMaxTags') && this._tags.length >= this._config.maxTags){
                     return false;
                 }
+                //check if tags duplicate
+                if(this.getTagByKey(tag[this.config('keyProperty')]) !== null){
+                    return false;
+                }
+                //push tag
                 this._tags.push(tag);
+                //trigger event
                 setTimeout(function(){this.trigger("onTagAdded", tag);}.bind(this));
             }else{
                 return false;
@@ -141,6 +156,15 @@ angular.module('ui.taginput', [])
         getTags: function(){
             return this._tags;
         },
+        getTagByKey: function(key){
+            var keyProperty = this.config('keyProperty');
+            for(var i=0; i<this._tags.length; i++){
+                if(this._tags[i][keyProperty] === key){
+                    return this._tags[i];
+                }
+            }
+            return null;
+        }
     });
 
     var _tagInputs = {};

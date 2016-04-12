@@ -2,6 +2,7 @@ $tag_color: #387ef5 !default;
 $tag_text_color: #fff !default;
 $tag_input_background_color: #fff !default;
 $tag_input_text_color: #000 !default;
+$tag_input_text_error_color: #f00 !default;
 $tag_input_icon_color: $tag_input_text_color !default;
 
 div.item.ui-tag-input{
@@ -17,6 +18,12 @@ div.ui-tag-input > growing-input input{
     display: inline-block;
     background-color: rgba(0, 0, 0, 0);
     color: $tag_input_text_color;
+}
+div.ui-tag-input > growing-input input.hide{
+    display: none;
+}
+div.ui-tag-input > growing-input input.error{
+    color: $tag_input_text_error_color;
 }
 div.growingInput > span.hiddenText{
     position: absolute;
