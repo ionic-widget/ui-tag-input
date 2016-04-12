@@ -1,8 +1,2 @@
-Model=function a(b,c,d,e){function f(){var a=this,f={};a.on=function(a,b){(f[a]||
-(f[a]=[])).push(b)},a.trigger=function(a,b){for(var c=f[a],d=0;c&&d<c.length;)c
-[d++](b)},a.off=function(a,b){for(d=f[a]||[];b&&(c=d.indexOf(b))>-1;)d.splice(c
-,1);f[a]=b?d:[]};for(c in b)d=b[c],a[c]=typeof d=="function"?function(){return(
-d=this.apply(a,arguments))===e?a:d}.bind(d):d;a.init&&a.init.apply(a,arguments)
-}return f.extend=function(f){d={};for(c in b)d[c]=b[c];for(c in f)d[c]=f[c],b[c
-]!==e&&(d["__"+c]=b[c]);return a(d)},f},typeof module=="object"&&(module.exports
-=Model);                                                              // c-{{{-<
+Model=function _(object,key,value,undefined){function Klass(){var target=this,observers={};target.on=function(event,listener){return(observers[event]||(observers[event]=[])).push(listener),target},target.trigger=function(event,data){for(var value=observers[event],key=0;value&&key<value.length;)value[key++](data)},target.off=function(event,listener){for(value=observers[event]||[];listener&&(key=value.indexOf(listener))>-1;)value.splice(key,1);return observers[event]=listener?value:[],target};for(key in object)value=object[key],target[key]="function"==typeof value?function(){return(value=this.apply(target,arguments))===undefined?target:value}.bind(value):value;target.init&&target.init.apply(target,arguments)}return Klass.extend=function(overrides){value={};for(key in object)value[key]=object[key];for(key in overrides)value[key]=overrides[key],object[key]!==undefined&&(value["__"+key]=object[key]);return _(value)},Klass},"object"==typeof module&&(module.exports=Model);
+ // c-{{{-<

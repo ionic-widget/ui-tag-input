@@ -3,8 +3,10 @@ angular.module('ui.taginput')
     return {
         restrict: 'E',
         replace: true,
+        require: 'ngModel',
         scope: {
             uiTagInputId: '@',
+            tags: '=ngModel',
         },
         template: '<div class="item ui-tag-input">' +
             '<tag-list ui-tag-input-id="{{::uiTagInputId}}"></tag-list>' +
@@ -13,12 +15,13 @@ angular.module('ui.taginput')
         compile: function(element, attrs){
             TagInputConfig.createTagInput(attrs.uiTagInputId, attrs);
             return linkFn;
-        }
+        },
     };
-    function linkFn($scope, $element){
+    function linkFn($scope, $element, attrs, ngModelCtrl){
         var tagInput = TagInputConfig.getTagInput($scope.uiTagInputId);
         var inputElement = $element.find("input")[0];
 
+        //add icon if needed
         if(tagInput.config('icon') !== ''){
             var interpolatedIcon = $interpolate('<span class="icon ion {{icon}} "></span>')({ icon: tagInput.config('icon') });
             $element.prepend(angular.element(interpolatedIcon));
@@ -32,11 +35,39 @@ angular.module('ui.taginput')
                 });
             }
         });
-        $scope.$watch("tags.length", function(){
+
+        ngModelCtrl.$isEmpty = function(value) {
+            return !value || !value.length;
+        };
+
+        function onTagChanged(){
+            $scope.tags = tagInput.getTags();
+            updateScroll();
+            ngModelCtrl.$setDirty();
+            setElementValidity();
+        }
+        function setElementValidity(){
+            ngModelCtrl.$setValidity('maxTags', tagInput.getTags().length <= tagInput.config('maxTags'));
+            ngModelCtrl.$setValidity('minTags', tagInput.getTags().length >= tagInput.config('minTags'));
+            ngModelCtrl.$validate();
+        }
+
+        function updateScroll(){
             $timeout(function(){
                 $element[0].scrollLeft = $element[0].scrollWidth;
             });
-        });
+        }
+
+        tagInput.on('onTagAdded', onTagChanged)
+                .on('onTagRemoved', onTagChanged);
+
+        if($scope.tags && $scope.tags.length > 0){
+            ngModelCtrl.$setDirty();
+            $scope.tags.forEach(function(tag){
+                tagInput.pushTag(tag);
+            });
+        }
+        setElementValidity();
     }
 })
 .directive('tagList', function(TagInputConfig, $interpolate) {
@@ -91,8 +122,11 @@ angular.module('ui.taginput')
             $scope.text = tagInput._text;
 
             $scope.$watch("text.value", function(){
+                //update width accordingly
                 var width = spanElement.width() + 20;
                 inputElement.css('width', width + 'px');
+                //remove error
+                inputElement.removeClass('error');
             });
             inputElement.on('blur', function(){
                 //TODO blur will trigger event when click to delete tag
@@ -105,6 +139,7 @@ angular.module('ui.taginput')
                         if(getCaret(inputElement[0]) === 0){
                             $timeout(function(){
                                 var tagRemoved = tagInput.popTag();
+                                //If enable edit last tag
                                 if(tagRemoved !== null && tagInput.config('enableEditingLastTag')){
                                     var tagText = tagRemoved[tagInput.config('displayProperty')];
                                     tagInput.text( tagText + tagInput.text());
@@ -136,6 +171,7 @@ angular.module('ui.taginput')
                         break;
                 }
             });
+            //create a tag for text infront of the caret
             function pushTagAtCaret(){
                 var caret = getCaret(inputElement[0]);
                 var text = tagInput.text();
@@ -146,6 +182,9 @@ angular.module('ui.taginput')
                         $timeout(function(){
                             setCaret(inputElement[0], 0);
                         });
+                    }else{
+                        //failed to create tag
+                        inputElement.addClass('error');
                     }
                 });
             }
@@ -154,6 +193,22 @@ angular.module('ui.taginput')
             }
             function setCaret(e, pos){
                 e.setSelectionRange(pos, pos);
+            }
+
+            //disable or enable input text depends on config
+            if(!tagInput.config('allowMoreThanMaxTags')){
+                tagInput.on('onTagAdded', disallowMoreTag)
+                        .on('onTagRemoved', disallowMoreTag);
+            }
+            function disallowMoreTag(){
+                if(tagInput.getTags().length == tagInput.config("maxTags")){
+                    inputElement.blur();
+                    inputElement.attr('disabled', 'disabled');
+                    inputElement.addClass('hide');
+                }else{
+                    inputElement.removeAttr('disabled');
+                    inputElement.removeClass('hide');
+                }
             }
         }
     };
