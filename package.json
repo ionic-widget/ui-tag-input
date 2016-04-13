@@ -27,5 +27,8 @@
     "jasmine": "^2.4.1",
     "karma": "^0.13.22",
     "karma-jasmine": "^0.3.8"
+  },
+  "dependencies": {
+    "jquery": "^2.2.3"
   }
 }

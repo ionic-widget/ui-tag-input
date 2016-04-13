@@ -1,13 +1,40 @@
-div.item.secondary-search-bar.category-search-bar{
+$tag_color: #387ef5 !default;
+$tag_border_color: $tag_color !default;
+$tag_text_color: #fff !default;
+$tag_input_background_color: #fff !default;
+$tag_input_border_color: #ddd !default;
+$tag_input_full_background_color: $tag_input_background_color !default;
+$tag_input_full_border_color: $tag_input_border_color !default;
+$tag_input_text_color: #000 !default;
+$tag_input_text_error_color: #f00 !default;
+$tag_input_icon_color: $tag_input_text_color !default;
+
+div.item.ui-tag-input{
     padding: 6px 0 5px 0px;
     overflow-x: scroll;
+    background-color: $tag_input_background_color;
+    border-color: $tag_input_border_color;
 }
-div.category-search-bar > tag-list div.tag-container{
+div.item.ui-tag-input.ui-tag-full{
+    padding: 6px 0 5px 0px;
+    overflow-x: scroll;
+    background-color: $tag_input_full_background_color;
+    border-color: $tag_input_full_border_color;
+}
+div.ui-tag-input > tag-list div.tag-container{
     display: inline-block;
 }
-div.category-search-bar > growing-input,
-div.category-search-bar > growing-input input{
+div.ui-tag-input > growing-input,
+div.ui-tag-input > growing-input input{
     display: inline-block;
+    background-color: rgba(0, 0, 0, 0);
+    color: $tag_input_text_color;
+}
+div.ui-tag-input > growing-input input.ui-tag-hide{
+    visibility: hidden;
+}
+div.ui-tag-input > growing-input input.error{
+    color: $tag_input_text_error_color;
 }
 div.growingInput > span.hiddenText{
     position: absolute;
@@ -21,30 +48,35 @@ div.tag-container pill{
 div.tag-container pill>i{
     font-size: x-small;
 }
-div.category-search-bar div.tag-container{
+div.ui-tag-input.withIcon div.tag-container{
     margin-left: 44px;
 }
-div.category-search-bar > .icon {
+div.ui-tag-input div.tag-container{
+    margin-left: 8px;
+}
+div.ui-tag-input > .icon {
     width: 28px;
     height: 28px;
     position: absolute;
     left: 8px;
     top: 8px;
     text-align: center;
+    color: $tag_input_icon_color !important;
 }
-div.category-search-bar > .icon:before {
+div.ui-tag-input > .icon:before {
     transform: translateY(50%);
 }
 pill{
     margin-right: 4px;
     padding: 2px 4px;
     font-size: 90%;
-    color: #fff;
+    color: $tag_text_color;
     border-radius: 3px;
     -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25);
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25)
 }
-pill.category-pill{
-    background-color: $positive;
+pill.ui-tag-input-pill{
+    background-color: $tag_color;
     white-space: nowrap;
+    border: 1px solid $tag_border_color;
 }
