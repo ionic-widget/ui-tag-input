@@ -86,6 +86,7 @@ angular.module('ui.taginput', [])
                    tag.length <= this.config('maxLength')){
                     var newTag = {};
                     newTag[this.config('displayProperty')] = tag;
+                    newTag[this.config('keyProperty')] = tag;
                     if(this.pushTag(newTag)){
                         return true;
                     }else{
