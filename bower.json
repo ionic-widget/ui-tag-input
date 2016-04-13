@@ -25,11 +25,14 @@
   ],
   "dependencies": {
     "jquery": "2.2.x",
-    "fishbone": "^1.0.1",
-    "angular": "^1.5.3",
-    "ionic": "^1.2.4"
+    "fishbone": "1.0.1",
+    "angular": "1.5.3",
+    "ionic": "1.2.4"
   },
   "devDependencies": {
-    "angular-mocks": "^1.5.3"
+    "angular-mocks": "1.5.3"
+  },
+  "resolutions": {
+    "angular": "1.5.3"
   }
 }
