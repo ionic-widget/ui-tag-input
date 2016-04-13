@@ -1,4 +1,4 @@
-# tag-input for Ionic
+# tag-input for Ionic [![Build Status](https://travis-ci.org/ionic-widget/ui-tag-input.svg?branch=master)](https://travis-ci.org/ionic-widget/ui-tag-input)
 
 ## Installation
 
