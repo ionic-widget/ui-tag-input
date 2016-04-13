@@ -25,6 +25,8 @@
   ],
   "dependencies": {
     "jquery": "2.2.x",
-    "fishbone": "^1.0.1"
+    "fishbone": "^1.0.1",
+    "angular": "^1.5.3",
+    "ionic": "^1.2.4"
   }
 }

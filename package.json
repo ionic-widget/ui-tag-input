@@ -25,6 +25,8 @@
     "gulp-uglify": "^1.5.3"
   },
   "dependencies": {
+    "angular": "^1.5.3",
+    "fishbone": "^1.0.1",
     "jquery": "^2.2.3"
   }
 }
