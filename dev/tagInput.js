@@ -41,10 +41,17 @@ angular.module('ui.taginput')
         };
 
         function onTagChanged(){
+            //update ng-model
             $scope.tags = tagInput.getTags();
+            //update scroll
             updateScroll();
+            //set validity
             ngModelCtrl.$setDirty();
             setElementValidity();
+            //disable or enable input text depends on config
+            if(!tagInput.config('allowMoreThanMaxTags')){
+                disallowMoreTag();
+            }
         }
         function setElementValidity(){
             ngModelCtrl.$setValidity('maxTags', tagInput.getTags().length <= tagInput.config('maxTags'));
@@ -66,6 +73,14 @@ angular.module('ui.taginput')
             $scope.tags.forEach(function(tag){
                 tagInput.pushTag(tag);
             });
+        }
+        //add .ui-tag-full class if do not allow more than max tag
+        function disallowMoreTag(){
+            if(tagInput.getTags().length == tagInput.config("maxTags")){
+                $element.addClass('ui-tag-full');
+            }else{
+                $element.removeClass('ui-tag-full');
+            }
         }
         setElementValidity();
     }
@@ -204,10 +219,10 @@ angular.module('ui.taginput')
                 if(tagInput.getTags().length == tagInput.config("maxTags")){
                     inputElement.blur();
                     inputElement.attr('disabled', 'disabled');
-                    inputElement.addClass('hide');
+                    inputElement.addClass('ui-tag-hide');
                 }else{
                     inputElement.removeAttr('disabled');
-                    inputElement.removeClass('hide');
+                    inputElement.removeClass('ui-tag-hide');
                 }
             }
         }
