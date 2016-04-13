@@ -4,7 +4,7 @@
   "description": "Tag Input for Ionic",
   "main": "tagInput.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/gulp/bin/gulp.js test"
   },
   "repository": {
     "type": "git",
