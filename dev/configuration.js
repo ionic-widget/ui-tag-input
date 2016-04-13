@@ -20,7 +20,7 @@ angular.module('ui.taginput', [])
         'allowedTagsPattern': {type: String, default: '.+'},
         'enableEditingLastTag': {type: Boolean, default: false},
     };
-    var allowedType: ['text', 'email', 'url'];
+    var allowedType = ['text', 'email', 'url'];
     /*
         Config Class
     */

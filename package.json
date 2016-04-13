@@ -4,7 +4,7 @@
   "description": "Tag Input for Ionic",
   "main": "tagInput.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/gulp/bin/gulp.js test"
   },
   "repository": {
     "type": "git",
@@ -17,14 +17,24 @@
   },
   "homepage": "https://github.com/ionic-widget/ui-tag-input#readme",
   "devDependencies": {
+    "angular-mocks": "^1.5.3",
     "gulp": "^3.9.1",
     "gulp-angular-filesort": "^1.1.1",
     "gulp-concat": "^2.6.0",
+    "gulp-jasmine": "^2.3.0",
     "gulp-ng-annotate": "^2.0.0",
     "gulp-ngdocs": "^0.2.13",
-    "gulp-uglify": "^1.5.3"
+    "gulp-uglify": "^1.5.3",
+    "jasmine": "^2.4.1",
+    "karma": "^0.13.22",
+    "karma-jasmine": "^0.3.8",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "phantomjs": "^2.1.7",
+    "phantomjs-prebuilt": "^2.1.7"
   },
   "dependencies": {
+    "angular": "^1.5.3",
+    "fishbone": "^1.0.1",
     "jquery": "^2.2.3"
   }
 }
