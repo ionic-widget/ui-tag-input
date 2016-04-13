@@ -1,9 +1,10 @@
 angular.module('ui.taginput', [])
 .provider('TagInputConfig', function(){
-    // var Model = require("./fishbone");
+    var Type = function Type(){};
     var defaultConfig = {
         'displayProperty': {type: String, default: 'value'},
         'keyProperty': {type: String, default: 'value'},
+        'type': {type: Type, default: 'text'},
         'minLength': {type: Number, default: 0},
         'maxLength': {type: Number, default: Number.MAX_SAFE_INTEGER},
         'minTags': {type: Number, default: 0},
@@ -19,6 +20,7 @@ angular.module('ui.taginput', [])
         'allowedTagsPattern': {type: String, default: '.+'},
         'enableEditingLastTag': {type: Boolean, default: false},
     };
+    var allowedType: ['text', 'email', 'url'];
     /*
         Config Class
     */
@@ -53,6 +55,8 @@ angular.module('ui.taginput', [])
     cleanFn[Number] = function(value){ return (/^\d+$/.test(value)) ? parseInt(value) : undefined; };
     cleanFn[Array] = function(value){ return (angular.isArray(value)) ? value : undefined; };
     cleanFn[Boolean] = function(value){ if(value === true || value === false){ return value; } else if (angular.isString(value)){ if(value === 'true') return true; if(value === 'false') return false; } return undefined;};
+    cleanFn[Type] = function(value){ for(var i=0; i<allowedType.length; i++){ if(allowedType[i] === value ) return allowedType[i]; } return undefined; };
+
     function clean(type, value, def){
         if(cleanFn[type]){
             var cleaned = cleanFn[type](value);
@@ -70,9 +74,6 @@ angular.module('ui.taginput', [])
         _text: {value: ''},
         init: function(config){
             this._config = new Config(config);
-        },
-        extendConfig: function(config){
-            this._config.extend(config);
         },
         pushTag: function(tag){
             if (!angular.isDefined(tag)){
@@ -143,8 +144,12 @@ angular.module('ui.taginput', [])
         config: function(name, value){
             if (angular.isDefined(value)) {
                 this._config.set(name, value);
-            }else{
+            }else if(angular.isString(name)){
                 return this._config[name];
+            }else if(angular.isObject(name)){
+                this._config.extend(config);
+            }else{
+                throw new Exception("Unsupported Operation");
             }
         },
         text: function(value){

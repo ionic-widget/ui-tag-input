@@ -125,7 +125,7 @@ angular.module('ui.taginput')
         restrict: 'E',
         template:
             '<div class="growingInput">' +
-                '<input type="text" placeholder="{{placeholder}}" ng-model="text.value">' +
+                '<input type="text" placeholder="{{::placeholder}}" type="{{::inputType}}" ng-model="text.value">' +
                 '<span class="hiddenText">{{text.value || placeholder}}</span>' +
             '</div>',
         link: function ($scope, $element, $attr){
@@ -134,6 +134,7 @@ angular.module('ui.taginput')
             var spanElement = $element.find("span");
             var tagInput = TagInputConfig.getTagInput(tagInputId);
             $scope.placeholder = tagInput.config("placeholder");
+            $scope.inputType = tagInput.config("type");
             $scope.text = tagInput._text;
 
             $scope.$watch("text.value", function(){
