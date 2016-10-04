@@ -3,4 +3,7 @@ node_js:
   - 4.2
 before_script:
   - npm install -g bower
+  - npm install -g codecov
   - bower install
+script:
+  - npm test
