@@ -29,7 +29,7 @@
 
     and run `grunt` to compile `sass`
 
-3. Add into your controller
+3. Add into your controllers module
     `angular.module('app.controllers', ['ui.taginput'])`
 
 ## Wiki
