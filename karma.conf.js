@@ -21,7 +21,12 @@ module.exports = function(config) {
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/fishbone/fishbone.js',
         // Files
-      'dev/**/*.js',
+        'dev/fishbone.js',
+        'dev/tag-input.module.js',
+        'dev/tag-input.config.js',
+        'dev/tag-list.directive.js',
+        'dev/tag-input.directive.js',
+        'dev/growing-input.directive.js',
         // Specs
       'spec/**/*.js'
     ],

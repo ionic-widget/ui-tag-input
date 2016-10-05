@@ -27,9 +27,13 @@
     @import "www/lib/ui-tag-input/tagInput";
     ```
 
-    and run `grunt` to compile `sass`
+3. Run `gulp` to compile `sass`
 
-3. Add into your controllers module
+    ```sh
+    $ gulp sass
+    ```
+
+4. Add into your controllers module
     `angular.module('app.controllers', ['ui.taginput'])`
 
 ## Wiki
