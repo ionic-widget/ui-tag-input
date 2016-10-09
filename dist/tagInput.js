@@ -1,4 +1,9 @@
-angular.module('lh.commons.util', [])
+(function(){
+    'use strict';
+
+    angular.module('lh.commons.util', []);
+
+})();
 
 (function() {
     'use strict';
