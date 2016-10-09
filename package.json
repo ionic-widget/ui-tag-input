@@ -1,6 +1,6 @@
 {
   "name": "ui-tag-input",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Tag Input for Ionic",
   "main": "tagInput.js",
   "scripts": {
