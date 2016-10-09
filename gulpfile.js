@@ -17,14 +17,20 @@ var path = {
 
 gulp.task('script', function(){
     return gulp.src(path.scripts)
+            .pipe($.concat('dist/tagInput.js'))
+            .pipe(gulp.dest('.'));
+});
+
+gulp.task('script:min', function(){
+    return gulp.src(path.scripts)
             .pipe($.uglify())
-            .pipe($.concat('tagInput.min.js'))
+            .pipe($.concat('dist/tagInput.min.js'))
             .pipe(gulp.dest('.'));
 });
 
 gulp.task('style', function(){
     return gulp.src(path.styles)
-            .pipe($.concat('tagInput.scss'))
+            .pipe($.concat('dist/tagInput.scss'))
             .pipe(gulp.dest('.'));
 });
 
@@ -36,4 +42,5 @@ gulp.task('test', ['build'], function(done){
 });
 
 gulp.task('build', ['script', 'style']);
+gulp.task('build:min', ['script:min', 'style']);
 gulp.task('default', ['build']);
