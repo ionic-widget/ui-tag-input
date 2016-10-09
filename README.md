@@ -1,4 +1,9 @@
-# tag-input for Ionic [![Build Status](https://travis-ci.org/ionic-widget/ui-tag-input.svg?branch=master)](https://travis-ci.org/ionic-widget/ui-tag-input)
+# tag-input for Ionic
+
+[![Build Status](https://travis-ci.org/ionic-widget/ui-tag-input.svg?branch=master)](https://travis-ci.org/ionic-widget/ui-tag-input)
+[![npm version](https://img.shields.io/npm/v/ui-tag-input.svg)](https://www.npmjs.com/package/ui-tag-input)
+[![npm license](https://img.shields.io/npm/l/ui-tag-input.svg)](https://www.npmjs.com/package/ui-tag-input)
+[![bower version](https://img.shields.io/bower/v/ui-tag-input.svg)](https://github.com/ionic-widget/ui-tag-input)
 
 ## Installation
 
@@ -12,19 +17,19 @@
 
 ## Usage
 
-1. Add `jQuery.js` and `tagInput.js` into `index.html`
+1. Add `jQuery.js` and `tagInput.min.js` into `index.html`
 
     ```javascript
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     ...
-    <script src="lib/ui-tag-input/tagInput.min.js"></script>
+    <script src="lib/ui-tag-input/dist/tagInput.min.js"></script>
     ```
 2. Import tagInput.sccs into `scss/ionic.app.scss`
 
     ```sass
     @import "www/lib/ionic/scss/ionic";
-    @import "www/lib/ui-tag-input/tagInput";
+    @import "www/lib/ui-tag-input/dist/tagInput";
     ```
 
 3. Run `gulp` to compile `sass`
