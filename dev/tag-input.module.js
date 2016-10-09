@@ -1,6 +1,8 @@
 (function(){
     'use strict';
 
-    angular.module('ui.taginput', []);
+    angular.module('ui.taginput', [
+        'lh.commons.util',
+    ]);
 
 })();

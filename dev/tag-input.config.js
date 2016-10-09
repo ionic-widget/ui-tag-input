@@ -4,8 +4,13 @@
     angular.module('ui.taginput')
         .factory('TagInputConfig', TagInputConfig);
 
-    TagInputConfig.$inject = [];
-    function TagInputConfig(){
+    TagInputConfig.$inject = ['DelegateHandle'];
+    function TagInputConfig(DelegateHandle){
+         return DelegateHandle.create(TagInput, 'tag-input');
+    }
+
+    TagInput.$inject = ['Listener'];
+    function TagInput(Listener){
         var defaultConfig = {
             displayProperty: 'value',
             keyProperty: 'value',
@@ -22,121 +27,30 @@
             addOnComma: true,
             addOnBlur: true,
             allowedTagsPattern: '.+',
+            allowedTagsPatternRegex: new RegExp('.+'),
             enableEditingLastTag: false,
         };
-
-        var config = {};
-        config.create = create;
-
-        function createConfig(configs){
-            configs = configs || {};
-            configs.displayProperty = angular.isDefined(configs.displayProperty) ? configs.displayProperty : 'value';
-            configs.keyProperty = angular.isDefined(configs.keyProperty) ? configs.keyProperty : 'value';
-            configs.type = angular.isDefined(configs.type) ? configs.type : 'text';
-            configs.minLength = angular.isDefined(configs.minLength) ? configs.minLength : 0;
-            configs.maxLength = angular.isDefined(configs.maxLength) ? configs.maxLength : Number.MAX_SAFE_INTEGER;
-            configs.minTags = angular.isDefined(configs.minTags) ? configs.minTags : 0;
-            configs.maxTags = angular.isDefined(configs.maxTags) ? configs.maxTags : Number.MAX_SAFE_INTEGER;
-            configs.allowMoreThanMaxTags = angular.isDefined(configs.allowMoreThanMaxTags) ? configs.allowMoreThanMaxTags : true;
-            configs.placeholder = angular.isDefined(configs.placeholder) ? configs.placeholder : '';
-            configs.icon = angular.isDefined(configs.icon) ? configs.icon : '';
-            configs.addOnEnter = angular.isDefined(configs.addOnEnter) ? configs.addOnEnter : true;
-            configs.addOnSpace = angular.isDefined(configs.addOnSpace) ? configs.addOnSpace : false;
-            configs.addOnComma = angular.isDefined(configs.addOnComma) ? configs.addOnComma : true;
-            configs.addOnBlur = angular.isDefined(configs.addOnBlur) ? configs.addOnBlur : true;
-            configs.allowedTagsPattern = angular.isDefined(configs.allowedTagsPattern) ? configs.allowedTagsPattern : '.+';
-            configs.allowedTagsPatternRegex = new RegExp(configs.allowedTagsPattern);
-            configs.enableEditingLastTag = angular.isDefined(configs.enableEditingLastTag) ? configs.enableEditingLastTag : false;
-            return configs;
-        }
-        var tagInput = {};
-
-
-
-        var Type = function Type(){};
-        var defaultConfig = {
-            'displayProperty': {type: String, default: 'value'},
-            'keyProperty': {type: String, default: 'value'},
-            'type': {type: Type, default: 'text'},
-            'minLength': {type: Number, default: 0},
-            'maxLength': {type: Number, default: Number.MAX_SAFE_INTEGER},
-            'minTags': {type: Number, default: 0},
-            'maxTags': {type: Number, default: Number.MAX_SAFE_INTEGER},
-            'allowMoreThanMaxTags': {type: Boolean, default: true },
-            'placeholder': {type: String, default: ''},
-            'icon': {type: String, default: '' },
-            'addOnEnter': {type: Boolean, default: true },
-            'addOnSpace': {type: Boolean, default: false },
-            'addOnComma': {type: Boolean, default: true },
-            'addOnBlur': {type: Boolean, default: true },
-            // 'addOnPaste': {type: Boolean, default: false },
-            'allowedTagsPattern': {type: String, default: '.+'},
-            'enableEditingLastTag': {type: Boolean, default: false},
-        };
-        var allowedType = ['text', 'email', 'url'];
-        /*
-            Config Class
-        */
-        var Config = Model({
-            init: function(config){
-                for(var c in defaultConfig){
-                    this[c] = clean(defaultConfig[c].type, config[c], defaultConfig[c].default);
-                }
-                this.allowedTagsPatternRegex = new RegExp(this.allowedTagsPattern);
-            },
-            extend: function(config){
-                for(var c in defaultConfig){
-                    this[c] = clean(defaultConfig[c].type, config[c], this[c]);
-                }
-                this.allowedTagsPatternRegex = new RegExp(this.allowedTagsPattern);
-            },
-            set: function(name, value){
-                if(name in this){
-                    this[name] = clean(defaultConfig[name].type, value, this[name]);
-                    //for special needs
-                    if(name === 'allowedTagsPattern'){
-                        this.allowedTagsPatternRegex = new RegExp(this.allowedTagsPattern);
-                    }
-                }
-            }
-        });
-        /*
-            private Config methods
-        */
-        var cleanFn = {};
-        cleanFn[String] = function(value){ return angular.isString(value) ? value : undefined; };
-        cleanFn[Number] = function(value){ return (/^\d+$/.test(value)) ? parseInt(value) : undefined; };
-        cleanFn[Array] = function(value){ return (angular.isArray(value)) ? value : undefined; };
-        cleanFn[Boolean] = function(value){ if(value === true || value === false){ return value; } else if (angular.isString(value)){ if(value === 'true') return true; if(value === 'false') return false; } return undefined;};
-        cleanFn[Type] = function(value){ for(var i=0; i<allowedType.length; i++){ if(allowedType[i] === value ) return allowedType[i]; } return undefined; };
-
-        function clean(type, value, def){
-            if(cleanFn[type]){
-                var cleaned = cleanFn[type](value);
-                return (cleaned == undefined) ? def : cleaned;
-            }else{
-                return null;
-            }
-        }
 
         /*
             TagInput Class
         */
         var TagInput = {};
-        TagInput._config = {};
+        TagInput._config = defaultConfig;
         TagInput._tags = [];
         TagInput._text = '';
-        TagInput.init = init;
+        TagInput._onTagAddedListener = Listener.create();
+        TagInput._onTagRemovedListener = Listener.create();
         TagInput.pushTag = _pushTag;
         TagInput.popTag = _popTag;
         TagInput.config = config;
         TagInput.text = text;
         TagInput.getTags = getTags;
         TagInput.getTagByKey = getTagByKey;
+        TagInput.displayTag = displayTag;
+        TagInput.onTagAdded = TagInput._onTagAddedListener.on;
+        TagInput.onTagRemoved = TagInput._onTagRemovedListener.on;
+        return TagInput;
 
-        function init(config){
-            TagInput._config = createConfig(config);
-        }
         function _pushTag(tag){
             if (!angular.isDefined(tag)){
                 if(TagInput.text() !== ''){
@@ -148,117 +62,172 @@
                 }
             } else if (angular.isString(tag)){
                 if(tag !== '' &&
-                    TagInput.config('allowedTagsPatternRegex').test(tag) &&
-                    tag.length >= TagInput.config('minLength') &&
-                    tag.length <= TagInput.config('maxLength')){
+                    TagInput._config.allowedTagsPatternRegex.test(tag) &&
+                    tag.length >= TagInput._config.minLength &&
+                    tag.length <= TagInput._config.maxLength){
                     return pushTagFromText(tag);
                 }
             } else if (angular.isArray(tag)) {
+                var success = true;
                 for(var i=0; i<tag.length; i++){
                     if(!_pushTag(tag[i])){
-                        return false;
+                        success = false;
                     }
                 }
-                return true;
+                return success;
             } else if(angular.isObject(tag)){
                 return pushTag(tag);
             }
             return false;
         }
-        function pushTagFromText(){
+        function pushTagFromText(text){
             var newTag = {};
-            newTag[TagInput.config('displayProperty')] = text;
-            newTag[TagInput.config('keyProperty')] = text;
+            newTag[TagInput._config.displayProperty] = text;
+            newTag[TagInput._config.keyProperty] = text;
             return pushTag(newTag);
         }
         function pushTag(tag){
             // check if allow more tags
-            if(!TagInput.config('allowMoreThanMaxTags') && TagInput._tags.length >= TagInput._config.maxTags){
+            if(!TagInput._config.allowMoreThanMaxTags && TagInput._tags.length >= TagInput._config.maxTags){
                 return false;
             }
             // check if tags duplicate
-            if(TagInput.getTagByKey(tag[TagInput.config('keyProperty')]) !== null){
+            if(TagInput.getTagByKey(tag[TagInput._config.keyProperty]) !== null){
                 return false;
             }
             // push tag
             TagInput._tags.push(tag);
             // trigger event
-            setTimeout(function(){this.trigger("onTagAdded", tag);}.bind(this));
+            TagInput._onTagAddedListener.notify(tag);
             // return true
             return true;
         }
 
         function _popTag(tag){
-
-        }
-            popTag: function(idx){
-                if(!angular.isDefined(idx)){
-                    var tagRemoved = this._tags.pop();
-                    if(tagRemoved !== undefined){
-                        setTimeout(function(){this.trigger("onTagRemoved", tagRemoved);}.bind(this));
-                        return tagRemoved;
-                    }
-                }else if(angular.isNumber(idx)){
-                    if(idx >= 0){
-                        var tagRemoved = this._tags.splice(idx, 1);
-                        if(tagRemoved.length === 1){
-                            setTimeout(function(){this.trigger("onTagRemoved", tagRemoved[0])}.bind(this));
-                            return tagRemoved[0];
-                        }
-                    }
-                }else if(angular.isObject(idx)){
-                    var index = this._tags.indexOf(idx);
-                    return this.popTag(index);
-                }
-                return null;
-            },
-            config: function(name, value){
-                if (angular.isDefined(value)) {
-                    this._config.set(name, value);
-                }else if(angular.isString(name)){
-                    return this._config[name];
-                }else if(angular.isObject(name)){
-                    this._config.extend(config);
-                }else{
-                    throw new Exception("Unsupported Operation");
-                }
-            },
-            text: function(value){
-                if(angular.isDefined(value)){
-                    this._text.value = value;
-                }else{
-                    return this._text.value;
-                }
-            },
-            getTags: function(){
-                return this._tags;
-            },
-            getTagByKey: function(key){
-                var keyProperty = this.config('keyProperty');
-                for(var i=0; i<this._tags.length; i++){
-                    if(this._tags[i][keyProperty] === key){
-                        return this._tags[i];
-                    }
-                }
-                return null;
-            }
-        });
-
-        var _tagInputs = {};
-        this.$get = function(){
-            return this;
-        };
-        this.createTagInput = function(name, config){
-            if (_tagInputs[name]) {
-                console.error("ui-tag-input with identifier '" + name + "' exists before.");
-                _tagInputs[name].extendConfig(config);
+            if(!angular.isDefined(tag)){
+                return popTagFromIndex(TagInput._tags.length - 1);
+            }else if(angular.isNumber(tag)){
+                return popTagFromIndex(tag);
+            }else if(angular.isObject(tag)){
+                return popTag(tag);
             }else{
-                _tagInputs[name] = new TagInput(config);
+                return null;
             }
-            return _tagInputs[name];
-        };
-        this.getTagInput = function(name){
-            return (_tagInputs[name]) ? _tagInputs[name]: this.createTagInput(name, {});
+        }
+        function popTagFromIndex(idx){
+            if(idx >= 0){
+                var tagRemoved = TagInput._tags.splice(idx, 1);
+                if(tagRemoved.length === 1){
+                    TagInput._onTagRemovedListener.notify(tagRemoved[0]);
+                    return tagRemoved[0];
+                }
+            }
+            return null;
+        }
+        function popTag(tag){
+            return popTagFromIndex(TagInput._tags.indexOf(tag));
+        }
+        function config(name, value){
+            if (angular.isDefined(value)) {
+                var c = {};
+                c[name] = value;
+                extendConfig(c);
+            }else if(angular.isString(name)){
+                return TagInput._config[name]
+            }else if(angular.isObject(name)){
+                extendConfig(name);
+            }else{
+                throw new Exception("Unsupported Operation");
+            }
+        }
+        function text(value){
+            if(angular.isDefined(value)){
+                TagInput._text = value;
+            }else{
+                return TagInput._text;
+            }
+        }
+        function getTags() {
+            return TagInput._tags;
+        }
+        function getTagByKey(key){
+            var keyProperty = TagInput._config.keyProperty;
+            for(var i=0; i<TagInput._tags.length; i++){
+                if(TagInput._tags[i][keyProperty] === key){
+                    return TagInput._tags[i];
+                }
+            }
+            return null;
+        }
+        function displayTag(tag){
+            return tag[TagInput._config.displayProperty];
+        }
+
+        function extendConfig(config) {
+            if(angular.isDefined(config.displayProperty)){
+                TagInput._config.displayProperty = makeString(config.displayProperty);
+            }
+            if(angular.isDefined(config.keyProperty)){
+                TagInput._config.keyProperty = makeString(config.keyProperty);
+            }
+            if(angular.isDefined(config.type)){
+                TagInput._config.type = makeString(config.type);
+            }
+            if(angular.isDefined(config.minLength) && isNumber(config.minLength)){
+                TagInput._config.minLength = makeNumber(config.minLength);
+            }
+            if(angular.isDefined(config.maxLength) && isNumber(config.maxLength)){
+                TagInput._config.maxLength = makeNumber(config.maxLength);
+            }
+            if(angular.isDefined(config.minTags) && isNumber(config.minTags)){
+                TagInput._config.minTags = makeNumber(config.minTags);
+            }
+            if(angular.isDefined(config.maxTags) && isNumber(config.maxTags)){
+                TagInput._config.maxTags = makeNumber(config.maxTags);
+            }
+            if(angular.isDefined(config.allowMoreThanMaxTags) && isBoolean(config.allowMoreThanMaxTags)){
+                TagInput._config.allowMoreThanMaxTags = makeBoolean(config.allowMoreThanMaxTags);
+            }
+            if(angular.isDefined(config.placeholder)){
+                TagInput._config.placeholder = makeString(config.placeholder);
+            }
+            if(angular.isDefined(config.icon)){
+                TagInput._config.icon = makeString(config.icon);
+            }
+            if(angular.isDefined(config.addOnEnter) && isBoolean(config.addOnEnter)){
+                TagInput._config.addOnEnter = makeBoolean(config.addOnEnter);
+            }
+            if(angular.isDefined(config.addOnSpace) && isBoolean(config.addOnSpace)){
+                TagInput._config.addOnSpace = makeBoolean(config.addOnSpace);
+            }
+            if(angular.isDefined(config.addOnComma) && isBoolean(config.addOnComma)){
+                TagInput._config.addOnComma = makeBoolean(config.addOnComma);
+            }
+            if(angular.isDefined(config.addOnBlur) && isBoolean(config.addOnBlur)){
+                TagInput._config.addOnBlur = makeBoolean(config.addOnBlur);
+            }
+            if(angular.isDefined(config.allowedTagsPattern)){
+                TagInput._config.allowedTagsPattern = config.allowedTagsPattern;
+                TagInput._config.allowedTagsPatternRegex = new RegExp(config.allowedTagsPattern);
+            }
+            if(angular.isDefined(config.enableEditingLastTag) && isBoolean(config.enableEditingLastTag)){
+                TagInput._config.enableEditingLastTag = makeBoolean(config.enableEditingLastTag);
+            }
+        }
+        function isNumber(str){
+            return /^\d+$/.test(str);
+        }
+        function isBoolean(str){
+            return /^(false|true)$/.test(str);
+        }
+        function makeBoolean(str){
+            return String(str) === 'true';
+        }
+        function makeString(str){
+            return String(str);
+        }
+        function makeNumber(str){
+            return parseInt(str);
         }
     }
 

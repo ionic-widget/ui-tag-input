@@ -16,19 +16,14 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
         // Dependencies
-      'bower_components/jquery/dist/jquery.js',
-      'bower_components/angular/angular.js',
-      'bower_components/angular-mocks/angular-mocks.js',
-      'bower_components/fishbone/fishbone.js',
+        'node_modules/jquery/dist/jquery.js',
+        'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
+        'node_modules/angular/angular.js',
+        'node_modules/angular-mocks/angular-mocks.js',
         // Files
-        'dev/fishbone.js',
-        'dev/tag-input.module.js',
-        'dev/tag-input.config.js',
-        'dev/tag-list.directive.js',
-        'dev/tag-input.directive.js',
-        'dev/growing-input.directive.js',
+        'tagInput.min.js',
         // Specs
-      'spec/**/*.js'
+        'spec/**/*.js'
     ],
 
 
@@ -40,7 +35,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'dev/**/*.js': ['coverage'],
+        'tagInput.min.js': ['coverage'],
     },
 
 

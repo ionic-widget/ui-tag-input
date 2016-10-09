@@ -17,8 +17,15 @@
             restrict: 'E',
             template:
                 '<div class="growingInput">' +
-                    '<input type="text" placeholder="{{::placeholder}}" type="{{::inputType}}" ng-model="text.value">' +
-                    '<span class="hiddenText">{{text.value || placeholder}}</span>' +
+                    '<input ' +
+                        'type="text" ' +
+                        'placeholder="{{::placeholder}}" ' +
+                        'type="{{::inputType}}" ' +
+                        'ng-keydown="onKeyDown($event)" ' +
+                        'ng-change="onInputChanged()" ' +
+                        'ng-blur="onInputBlur()" ' +
+                        'ng-model="tagInput._text">' +
+                    '<span class="hiddenText">{{tagInput._text || placeholder}}</span>' +
                 '</div>',
             link: link,
         };
@@ -27,21 +34,24 @@
             var tagInputId = attr.uiTagInputId;
             var inputElement = elem.find("input");
             var spanElement = elem.find("span");
-            var tagInput = TagInputConfig.getTagInput(tagInputId);
 
             ////////////////////
+            var tagInput = TagInputConfig.getByHandle(tagInputId);
+            scope.tagInput = tagInput;
             scope.placeholder = tagInput.config("placeholder");
             scope.inputType = tagInput.config("type");
-            scope.text = tagInput._text;
-
-            scope.$watch("text.value", onInputChanged);
-            inputElement.on('blur', onInputBlur);
-            angular.element(inputElement).bind("keydown keypress", onKeyPress);
+            scope.onInputBlur = onInputBlur;
+            scope.onInputChanged = onInputChanged;
+            scope.onKeyDown = onKeyDown;
 
             //disable or enable input text depends on config
             if(!tagInput.config('allowMoreThanMaxTags')){
-                tagInput.on('onTagAdded', disallowMoreTag);
-                tagInput.on('onTagRemoved', disallowMoreTag);
+                var offTagAdded = tagInput.onTagAdded(disallowMoreTag);
+                var offTagRemoved = tagInput.onTagRemoved(disallowMoreTag);
+                scope.$on('$destroy', function(){
+                    offTagAdded();
+                    offTagRemoved();
+                });
             }
 
             function onInputChanged(){
@@ -54,26 +64,22 @@
 
             function onInputBlur(){
                 //TODO blur will trigger event when click to delete tag
-                $timeout(function(){
-                    tagInput.pushTag();
-                });
+                tagInput.pushTag();
             }
 
-            function onKeyPress(event) {
+            function onKeyDown(event) {
                 var key = event.which;
                 if(key === KEY_BACKSPACE || key === KEY_DELETE){
                     if(getCaret(inputElement[0]) === 0){
-                        $timeout(function(){
-                            var tagRemoved = tagInput.popTag();
-                            //If enable edit last tag
-                            if(tagRemoved !== null && tagInput.config('enableEditingLastTag')){
-                                var tagText = tagRemoved[tagInput.config('displayProperty')];
-                                tagInput.text( tagText + tagInput.text());
-                                $timeout(function() {
-                                    setCaret(inputElement[0], tagText.length);
-                                });
-                            }
-                        });
+                        var tagRemoved = tagInput.popTag();
+                        //If enable edit last tag
+                        if(tagRemoved !== null && tagInput.config('enableEditingLastTag')){
+                            var tagText = tagRemoved[tagInput.config('displayProperty')];
+                            tagInput.text( tagText + tagInput.text());
+                            // $timeout(function() {
+                                setCaret(inputElement[0], tagText.length);
+                            // });
+                        }
                         event.preventDefault();
                     }
                 } else if((key === KEY_ENTER && tagInput.config('addOnEnter')) ||

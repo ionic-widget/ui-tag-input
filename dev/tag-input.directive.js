@@ -19,12 +19,12 @@
                 '<growing-input ui-tag-input-id="{{::uiTagInputId}}"></growing-input>' +
             '</div>',
             compile: function(element, attrs){
-                TagInputConfig.createTagInput(attrs.uiTagInputId, attrs);
+                TagInputConfig.getByHandle(attrs.uiTagInputId).config(attrs);
                 return linkFn;
             },
         };
         function linkFn($scope, $element, attrs, ngModelCtrl){
-            var tagInput = TagInputConfig.getTagInput($scope.uiTagInputId);
+            var tagInput = TagInputConfig.getByHandle($scope.uiTagInputId);
             var inputElement = $element.find("input")[0];
 
             //add icon if needed
@@ -71,8 +71,8 @@
                 });
             }
 
-            tagInput.on('onTagAdded', onTagChanged)
-                    .on('onTagRemoved', onTagChanged);
+            tagInput.onTagAdded(onTagChanged);
+            tagInput.onTagRemoved(onTagChanged);
 
             if($scope.tags && $scope.tags.length > 0){
                 ngModelCtrl.$setDirty();

@@ -3,7 +3,9 @@ var gulp = require('gulp'),
   Server = require('karma').Server;
 
 var path = {
-    scripts: ['./dev/fishbone.js',
+    scripts: ['./dev/commons/util.module.js',
+              './dev/commons/delegate-handle.service.js',
+              './dev/commons/listener.service.js',
               './dev/tag-input.module.js',
               './dev/tag-input.config.js',
               './dev/tag-list.directive.js',
@@ -26,7 +28,7 @@ gulp.task('style', function(){
             .pipe(gulp.dest('.'));
 });
 
-gulp.task('test', function(done){
+gulp.task('test', ['build'], function(done){
     new Server({
         configFile: __dirname + '/karma.conf.js',
         singleRun: true
