@@ -21,7 +21,7 @@ module.exports = function(config) {
         'node_modules/angular/angular.js',
         'node_modules/angular-mocks/angular-mocks.js',
         // Files
-        'dist/tagInput.js',
+        'dist/tagInput.min.js',
         // Specs
         'spec/**/*.js'
     ],
@@ -35,7 +35,6 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'dist/tagInput.js': ['coverage'],
     },
 
 
@@ -74,14 +73,5 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity,
-
-    coverageReporter: {
-        reporters: [
-            // generates ./coverage/lcov.info
-            {type:'lcovonly', subdir: '.'},
-            // generates ./coverage/coverage-final.json
-            {type:'json', subdir: '.'},
-        ]
-    },
 });
 };

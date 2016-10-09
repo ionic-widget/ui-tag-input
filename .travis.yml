@@ -6,4 +6,5 @@ before_script:
   - npm install -g codecov
   - bower install
 script:
+  - npm run build
   - npm test

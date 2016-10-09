@@ -4,7 +4,8 @@
   "description": "Tag Input for Ionic",
   "main": "tagInput.js",
   "scripts": {
-    "test": "./node_modules/gulp/bin/gulp.js test && codecov"
+    "build": "./node_modules/gulp/bin/gulp.js build:all",
+    "test": "./node_modules/gulp/bin/gulp.js test:all && codecov"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,8 @@
     "karma-jasmine": "1.0.x",
     "karma-phantomjs-launcher": "1.0.x",
     "phantomjs": "2.1.x",
-    "phantomjs-prebuilt": "2.1.x"
+    "phantomjs-prebuilt": "2.1.x",
+    "run-sequence": "^1.2.2"
   },
   "dependencies": {
     "angular": "^1.5.3",

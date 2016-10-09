@@ -1,5 +1,6 @@
 var gulp = require('gulp'),
        $ = require('gulp-load-plugins')(),
+     seq = require('run-sequence'),
   Server = require('karma').Server;
 
 var path = {
@@ -34,13 +35,26 @@ gulp.task('style', function(){
             .pipe(gulp.dest('.'));
 });
 
-gulp.task('test', ['build'], function(done){
+gulp.task('test', function(done){
     new Server({
         configFile: __dirname + '/karma/karma.conf.js',
         singleRun: true
     }, done).start();
 });
 
+gulp.task('test:min', function(done){
+    new Server({
+        configFile: __dirname + '/karma/karma-min.conf.js',
+        singleRun: true
+    }, done).start();
+});
+
 gulp.task('build', ['script', 'style']);
 gulp.task('build:min', ['script:min', 'style']);
-gulp.task('default', ['build']);
+gulp.task('build:all', function(cb){
+    seq('build', 'build:min', cb);
+});
+gulp.task('default', ['build:all']);
+gulp.task('test:all', function(cb){
+    seq('test', 'test:min', cb);
+});
