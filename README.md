@@ -4,6 +4,7 @@
 [![npm version](https://img.shields.io/npm/v/ui-tag-input.svg)](https://www.npmjs.com/package/ui-tag-input)
 [![npm license](https://img.shields.io/npm/l/ui-tag-input.svg)](https://www.npmjs.com/package/ui-tag-input)
 [![bower version](https://img.shields.io/bower/v/ui-tag-input.svg)](https://github.com/ionic-widget/ui-tag-input)
+[![codecov](https://codecov.io/gh/ionic-widget/ui-tag-input/branch/master/graph/badge.svg)](https://codecov.io/gh/ionic-widget/ui-tag-input)
 
 ## Installation
 

@@ -81,6 +81,7 @@ module.exports = function(config) {
             {type:'lcovonly', subdir: '.'},
             // generates ./coverage/coverage-final.json
             {type:'json', subdir: '.'},
+            {type: 'html', subdir: '.' },
         ]
     },
 });

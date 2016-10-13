@@ -14,37 +14,42 @@
                 uiTagInputId: '@',
                 tags: '=ngModel',
             },
-            template: '<div class="item ui-tag-input">' +
+            template: '<div class="item ui-tag-input" ng-click="onClick()" ng-class="tagInput.config(\'icon\') !== \'\' ? \'withIcon\' : \'\'">' +
+                '<span ng-if="tagInput.config(\'icon\') !== \'\'" class="icon ion" ng-class="tagInput.config(\'icon\')"></span>' +
                 '<tag-list ui-tag-input-id="{{::uiTagInputId}}"></tag-list>' +
-                '<growing-input ui-tag-input-id="{{::uiTagInputId}}"></growing-input>' +
+                '<growing-input ui-tag-input-id="{{::uiTagInputId}}" on-input-blur="onInputBlur()" on-input-focus="onInputFocus()"></growing-input>' +
             '</div>',
-            compile: function(element, attrs){
-                TagInputConfig.getByHandle(attrs.uiTagInputId).config(attrs);
-                return linkFn;
-            },
+            link: linkFn,
         };
         function linkFn($scope, $element, attrs, ngModelCtrl){
             var tagInput = TagInputConfig.getByHandle($scope.uiTagInputId);
+            tagInput.config(attrs);
             var inputElement = $element.find("input")[0];
+            var justClicked = false;
+            $scope.tagInput = tagInput;
+            $scope.onInputBlur = onInputBlur;
+            $scope.onInputFocus = onInputFocus;
+            $scope.onClick = onClick;
+            var offTagAdded = tagInput.onTagAdded(onTagChanged);
+            var offTagRemoved = tagInput.onTagRemoved(onTagChanged);
 
-            //add icon if needed
-            if(tagInput.config('icon') !== ''){
-                var interpolatedIcon = $interpolate('<span class="icon ion {{icon}} "></span>')({ icon: tagInput.config('icon') });
-                $element.prepend(angular.element(interpolatedIcon));
-                $element.addClass('withIcon');
+            if($scope.tags && $scope.tags.length > 0){
+                ngModelCtrl.$setDirty();
+                tagInput.pushTag($scope.tags);
             }
-
-            $element.bind("click", function(event){
-                if(event.target == $element[0]){
-                    $timeout(function(){
-                        inputElement.focus();
-                    });
-                }
-            });
+            setElementValidity();
 
             ngModelCtrl.$isEmpty = function(value) {
                 return !value || !value.length;
             };
+
+            ////////////////////
+            $scope.$on('$destroy', function(){
+                offTagAdded();
+                offTagRemoved();
+            });
+
+            /////////////////////
 
             function onTagChanged(){
                 //update ng-model
@@ -70,16 +75,6 @@
                     $element[0].scrollLeft = $element[0].scrollWidth;
                 });
             }
-
-            tagInput.onTagAdded(onTagChanged);
-            tagInput.onTagRemoved(onTagChanged);
-
-            if($scope.tags && $scope.tags.length > 0){
-                ngModelCtrl.$setDirty();
-                $scope.tags.forEach(function(tag){
-                    tagInput.pushTag(tag);
-                });
-            }
             //add .ui-tag-full class if do not allow more than max tag
             function disallowMoreTag(){
                 if(tagInput.getTags().length == tagInput.config("maxTags")){
@@ -88,7 +83,21 @@
                     $element.removeClass('ui-tag-full');
                 }
             }
-            setElementValidity();
+            function onInputBlur(){
+                if(!justClicked){
+                    tagInput.pushTag();
+                }
+                justClicked = false;
+            }
+            function onInputFocus(){
+                justClicked = false;
+            }
+            function onClick(){
+                justClicked = true;
+                $timeout(function(){
+                    inputElement.focus();
+                });
+            }
         }
     }
 

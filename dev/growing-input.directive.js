@@ -15,6 +15,11 @@
 
         return {
             restrict: 'E',
+            scope: {
+                uiTagInputId: '@',
+                onInputBlur: '&',
+                onInputFocus: '&',
+            },
             template:
                 '<div class="growingInput">' +
                     '<input ' +
@@ -24,14 +29,15 @@
                         'ng-keydown="onKeyDown($event)" ' +
                         'ng-change="onInputChanged()" ' +
                         'ng-blur="onInputBlur()" ' +
+                        'ng-focus="onInputFocus()" ' +
                         'ng-model="tagInput._text">' +
                     '<span class="hiddenText">{{tagInput._text || placeholder}}</span>' +
                 '</div>',
             link: link,
         };
 
-        function link(scope, elem, attr){
-            var tagInputId = attr.uiTagInputId;
+        function link(scope, elem){
+            var tagInputId = scope.uiTagInputId;
             var inputElement = elem.find("input");
             var spanElement = elem.find("span");
 
@@ -40,7 +46,6 @@
             scope.tagInput = tagInput;
             scope.placeholder = tagInput.config("placeholder");
             scope.inputType = tagInput.config("type");
-            scope.onInputBlur = onInputBlur;
             scope.onInputChanged = onInputChanged;
             scope.onKeyDown = onKeyDown;
 
@@ -60,11 +65,6 @@
                 inputElement.css('width', width + 'px');
                 //remove error
                 inputElement.removeClass('error');
-            }
-
-            function onInputBlur(){
-                //TODO blur will trigger event when click to delete tag
-                tagInput.pushTag();
             }
 
             function onKeyDown(event) {

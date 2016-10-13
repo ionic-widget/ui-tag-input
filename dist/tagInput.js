@@ -237,12 +237,7 @@
                     return success;
                 }
             } else if (angular.isString(tag)){
-                if(tag !== '' &&
-                    TagInput._config.allowedTagsPatternRegex.test(tag) &&
-                    tag.length >= TagInput._config.minLength &&
-                    tag.length <= TagInput._config.maxLength){
-                    return pushTagFromText(tag);
-                }
+                return pushTagFromText(tag);
             } else if (angular.isArray(tag)) {
                 var success = true;
                 for(var i=0; i<tag.length; i++){
@@ -257,10 +252,16 @@
             return false;
         }
         function pushTagFromText(text){
-            var newTag = {};
-            newTag[TagInput._config.displayProperty] = text;
-            newTag[TagInput._config.keyProperty] = text;
-            return pushTag(newTag);
+            if(text !== '' &&
+                TagInput._config.allowedTagsPatternRegex.test(text) &&
+                text.length >= TagInput._config.minLength &&
+                text.length <= TagInput._config.maxLength){
+                var newTag = {};
+                newTag[TagInput._config.displayProperty] = text;
+                newTag[TagInput._config.keyProperty] = text;
+                return pushTag(newTag);
+            }
+            return false;
         }
         function pushTag(tag){
             // check if allow more tags
@@ -310,7 +311,7 @@
                 extendConfig(c);
             }else if(angular.isString(name)){
                 return TagInput._config[name]
-            }else if(angular.isObject(name)){
+            }else if(angular.isObject(name) && !angular.isArray(name)){
                 extendConfig(name);
             }else{
                 throw new Exception("Unsupported Operation");
@@ -452,37 +453,42 @@
                 uiTagInputId: '@',
                 tags: '=ngModel',
             },
-            template: '<div class="item ui-tag-input">' +
+            template: '<div class="item ui-tag-input" ng-click="onClick()" ng-class="tagInput.config(\'icon\') !== \'\' ? \'withIcon\' : \'\'">' +
+                '<span ng-if="tagInput.config(\'icon\') !== \'\'" class="icon ion" ng-class="tagInput.config(\'icon\')"></span>' +
                 '<tag-list ui-tag-input-id="{{::uiTagInputId}}"></tag-list>' +
-                '<growing-input ui-tag-input-id="{{::uiTagInputId}}"></growing-input>' +
+                '<growing-input ui-tag-input-id="{{::uiTagInputId}}" on-input-blur="onInputBlur()" on-input-focus="onInputFocus()"></growing-input>' +
             '</div>',
-            compile: function(element, attrs){
-                TagInputConfig.getByHandle(attrs.uiTagInputId).config(attrs);
-                return linkFn;
-            },
+            link: linkFn,
         };
         function linkFn($scope, $element, attrs, ngModelCtrl){
             var tagInput = TagInputConfig.getByHandle($scope.uiTagInputId);
+            tagInput.config(attrs);
             var inputElement = $element.find("input")[0];
+            var justClicked = false;
+            $scope.tagInput = tagInput;
+            $scope.onInputBlur = onInputBlur;
+            $scope.onInputFocus = onInputFocus;
+            $scope.onClick = onClick;
+            var offTagAdded = tagInput.onTagAdded(onTagChanged);
+            var offTagRemoved = tagInput.onTagRemoved(onTagChanged);
 
-            //add icon if needed
-            if(tagInput.config('icon') !== ''){
-                var interpolatedIcon = $interpolate('<span class="icon ion {{icon}} "></span>')({ icon: tagInput.config('icon') });
-                $element.prepend(angular.element(interpolatedIcon));
-                $element.addClass('withIcon');
+            if($scope.tags && $scope.tags.length > 0){
+                ngModelCtrl.$setDirty();
+                tagInput.pushTag($scope.tags);
             }
-
-            $element.bind("click", function(event){
-                if(event.target == $element[0]){
-                    $timeout(function(){
-                        inputElement.focus();
-                    });
-                }
-            });
+            setElementValidity();
 
             ngModelCtrl.$isEmpty = function(value) {
                 return !value || !value.length;
             };
+
+            ////////////////////
+            $scope.$on('$destroy', function(){
+                offTagAdded();
+                offTagRemoved();
+            });
+
+            /////////////////////
 
             function onTagChanged(){
                 //update ng-model
@@ -508,16 +514,6 @@
                     $element[0].scrollLeft = $element[0].scrollWidth;
                 });
             }
-
-            tagInput.onTagAdded(onTagChanged);
-            tagInput.onTagRemoved(onTagChanged);
-
-            if($scope.tags && $scope.tags.length > 0){
-                ngModelCtrl.$setDirty();
-                $scope.tags.forEach(function(tag){
-                    tagInput.pushTag(tag);
-                });
-            }
             //add .ui-tag-full class if do not allow more than max tag
             function disallowMoreTag(){
                 if(tagInput.getTags().length == tagInput.config("maxTags")){
@@ -526,7 +522,21 @@
                     $element.removeClass('ui-tag-full');
                 }
             }
-            setElementValidity();
+            function onInputBlur(){
+                if(!justClicked){
+                    tagInput.pushTag();
+                }
+                justClicked = false;
+            }
+            function onInputFocus(){
+                justClicked = false;
+            }
+            function onClick(){
+                justClicked = true;
+                $timeout(function(){
+                    inputElement.focus();
+                });
+            }
         }
     }
 
@@ -549,6 +559,11 @@
 
         return {
             restrict: 'E',
+            scope: {
+                uiTagInputId: '@',
+                onInputBlur: '&',
+                onInputFocus: '&',
+            },
             template:
                 '<div class="growingInput">' +
                     '<input ' +
@@ -558,14 +573,15 @@
                         'ng-keydown="onKeyDown($event)" ' +
                         'ng-change="onInputChanged()" ' +
                         'ng-blur="onInputBlur()" ' +
+                        'ng-focus="onInputFocus()" ' +
                         'ng-model="tagInput._text">' +
                     '<span class="hiddenText">{{tagInput._text || placeholder}}</span>' +
                 '</div>',
             link: link,
         };
 
-        function link(scope, elem, attr){
-            var tagInputId = attr.uiTagInputId;
+        function link(scope, elem){
+            var tagInputId = scope.uiTagInputId;
             var inputElement = elem.find("input");
             var spanElement = elem.find("span");
 
@@ -574,7 +590,6 @@
             scope.tagInput = tagInput;
             scope.placeholder = tagInput.config("placeholder");
             scope.inputType = tagInput.config("type");
-            scope.onInputBlur = onInputBlur;
             scope.onInputChanged = onInputChanged;
             scope.onKeyDown = onKeyDown;
 
@@ -594,11 +609,6 @@
                 inputElement.css('width', width + 'px');
                 //remove error
                 inputElement.removeClass('error');
-            }
-
-            function onInputBlur(){
-                //TODO blur will trigger event when click to delete tag
-                tagInput.pushTag();
             }
 
             function onKeyDown(event) {

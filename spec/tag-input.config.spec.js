@@ -67,6 +67,18 @@ describe('TagInputConfig', function() {
             expect(testTag.config('nonExistProperty')).toBeUndefined();
             expect(testTag.config('keyProperty')).toBe('test');
         });
+
+        it('should throw', function(){
+            expect(mightThrowWithArray).toThrow();
+            expect(mightThrowWithNumbers).toThrow();
+
+            function mightThrowWithArray(){
+              testTag.config(['allowedTagsPattern', '\\\d*']);
+            }
+            function mightThrowWithNumbers(){
+              testTag.config(1);
+            }
+        });
     });
     describe('text', function(){
         it('can read text', function(){
@@ -137,6 +149,12 @@ describe('TagInputConfig', function() {
             expect(testTag._tags.length).toEqual(2);
             expect(testTag._tags[0]).toEqual({ value: 'zxcv' });
             expect(testTag._tags[1]).toEqual({ value: 'sdfg' });
+
+            testTag.text('zxcv');
+            expect(testTag.pushTag()).toBe(false);
+            expect(testTag._tags.length).toEqual(2);
+            expect(testTag._tags[0]).toEqual({ value: 'zxcv' });
+            expect(testTag._tags[1]).toEqual({ value: 'sdfg' });
         });
 
         it('cannot push duplicate based on key property - allow if value is not keyproperty', function(){
@@ -160,9 +178,50 @@ describe('TagInputConfig', function() {
             expect(testTag.pushTag('rewq')).toBe(false);
             expect(testTag.getTags().length).toBe(4);
 
+            testTag.text('trew');
+            expect(testTag.pushTag()).toBe(false);
+            expect(testTag.getTags().length).toBe(4);
+
+            expect(testTag.pushTag({value: 'ytre'})).toBe(false);
+            expect(testTag.getTags().length).toBe(4);
+
             testTag.config('allowMoreThanMaxTags', true);
             expect(testTag.pushTag('rewq')).toBe(true);
             expect(testTag.getTags().length).toBe(5);
+        });
+
+        it('should not push tags if the text does not pass the requirement', function(){
+            testTag.config('allowedTagsPattern', '\\\d+');
+            expect(testTag.pushTag('asdf')).toBe(false);
+            testTag.text('qwer');
+            expect(testTag.pushTag()).toBe(false);
+
+            expect(testTag.pushTag('123')).toBe(true);
+            testTag.text('345');
+            expect(testTag.pushTag()).toBe(true);
+
+            testTag.config('minLength', 5);
+            expect(testTag.pushTag('123')).toBe(false);
+            testTag.text('345');
+            expect(testTag.pushTag()).toBe(false);
+
+            expect(testTag.pushTag('12345')).toBe(true);
+            expect(testTag.pushTag('1234567890')).toBe(true);
+            testTag.text('3456789012');
+            expect(testTag.pushTag()).toBe(true);
+
+            testTag.config('maxLength', 7);
+            expect(testTag.pushTag('1234567890')).toBe(false);
+            testTag.text('3456789012');
+            expect(testTag.pushTag()).toBe(false);
+
+            expect(testTag.pushTag('1234567')).toBe(true);
+            testTag.text('3456789');
+            expect(testTag.pushTag()).toBe(true);
+        });
+
+        it('should return false for unexpected parameter', function(){
+            expect(testTag.pushTag(1)).toBe(false);
         });
     });
 
@@ -238,5 +297,5 @@ describe('TagInputConfig', function() {
             expect(testTag.displayTag(tag)).toEqual('cool');
         });
     });
-    
+
 });

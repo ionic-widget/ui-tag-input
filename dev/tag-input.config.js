@@ -61,12 +61,7 @@
                     return success;
                 }
             } else if (angular.isString(tag)){
-                if(tag !== '' &&
-                    TagInput._config.allowedTagsPatternRegex.test(tag) &&
-                    tag.length >= TagInput._config.minLength &&
-                    tag.length <= TagInput._config.maxLength){
-                    return pushTagFromText(tag);
-                }
+                return pushTagFromText(tag);
             } else if (angular.isArray(tag)) {
                 var success = true;
                 for(var i=0; i<tag.length; i++){
@@ -81,10 +76,16 @@
             return false;
         }
         function pushTagFromText(text){
-            var newTag = {};
-            newTag[TagInput._config.displayProperty] = text;
-            newTag[TagInput._config.keyProperty] = text;
-            return pushTag(newTag);
+            if(text !== '' &&
+                TagInput._config.allowedTagsPatternRegex.test(text) &&
+                text.length >= TagInput._config.minLength &&
+                text.length <= TagInput._config.maxLength){
+                var newTag = {};
+                newTag[TagInput._config.displayProperty] = text;
+                newTag[TagInput._config.keyProperty] = text;
+                return pushTag(newTag);
+            }
+            return false;
         }
         function pushTag(tag){
             // check if allow more tags
@@ -134,7 +135,7 @@
                 extendConfig(c);
             }else if(angular.isString(name)){
                 return TagInput._config[name]
-            }else if(angular.isObject(name)){
+            }else if(angular.isObject(name) && !angular.isArray(name)){
                 extendConfig(name);
             }else{
                 throw new Exception("Unsupported Operation");
