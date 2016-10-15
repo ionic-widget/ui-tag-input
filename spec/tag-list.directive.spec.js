@@ -18,6 +18,10 @@ describe('TagList', function() {
         $rootScope.$apply();
     }));
 
+    afterEach(function(){
+        tagList.remove();
+    });
+
     it('should have new tag when added', function(){
         expect(tagList.find('pill')).toHaveLength(0);
         // add tag

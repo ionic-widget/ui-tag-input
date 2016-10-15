@@ -21,6 +21,7 @@ module.exports = function(config) {
         'node_modules/angular/angular.js',
         'node_modules/angular-mocks/angular-mocks.js',
         // Files
+        'dist/tagInput.scss',
         'dist/tagInput.js',
         // Specs
         'spec/**/*.js'
@@ -36,6 +37,7 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
         'dist/tagInput.js': ['coverage'],
+        'dist/tagInput.scss': ['scss'],
     },
 
 
@@ -59,7 +61,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // start these browsers
